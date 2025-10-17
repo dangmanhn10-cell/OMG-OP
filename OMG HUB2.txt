@@ -1,0 +1,470 @@
+-- ✅ OMG HUB - 99 ĐÊM TRONG RỪNG 🌲
+-- Cre Đăng Mạnh
+
+repeat task.wait() until game:IsLoaded()
+
+-- 🟢 Nút mở menu chính
+local ScreenGui = Instance.new("ScreenGui")
+local ImageButton = Instance.new("ImageButton")
+local UICorner = Instance.new("UICorner")
+
+ScreenGui.Parent = game.CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+ImageButton.Parent = ScreenGui
+ImageButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ImageButton.BorderSizePixel = 0
+ImageButton.Position = UDim2.new(0.10615778, 0, 0.16217947, 0)
+ImageButton.Size = UDim2.new(0, 40, 0, 40)
+ImageButton.Draggable = true
+ImageButton.Image = "http://www.roblox.com/asset/?id=108786637679134"
+
+UICorner.CornerRadius = UDim.new(1, 10)
+UICorner.Parent = ImageButton
+
+ImageButton.MouseButton1Down:Connect(function()
+	game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.End, false, game)
+end)
+
+-- 🟣 Giao diện Fluent
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+repeat wait() until game:IsLoaded()
+
+-- 🪟 Cửa sổ chính
+local Window = Fluent:CreateWindow({
+	Title = "OMG HUB - 99 ĐÊM",
+	SubTitle = "Cre Đăng Mạnh",
+	TabWidth = 157,
+	Size = UDim2.fromOffset(500, 350),
+	Acrylic = true,
+	Theme = "Dark",
+	MinimizeKey = Enum.KeyCode.End
+})
+
+-- 📑 Các tab (mục chính) - ĐÃ THAY ĐỔI HOÀN TOÀN
+local Tabs = {
+	TrangChu = Window:AddTab({ Title = "TRANG CHỦ 🏠" }),
+	AutoFarm = Window:AddTab({ Title = "AUTO FARM 🪵" }),
+	CheTao = Window:AddTab({ Title = "CHẾ TẠO 🛠️" }),
+	NhanVat = Window:AddTab({ Title = "NHÂN VẬT 🎮" }),
+	XaHoi = Window:AddTab({ Title = "XÃ HỘI 👥" }),
+	TienIch = Window:AddTab({ Title = "TIỆN ÍCH 🎯" })
+}
+
+------------------------------------------------
+-- TAB TRANG CHỦ
+------------------------------------------------
+Tabs.TrangChu:AddParagraph("99 ĐÊM TRONG RỪNG", "Game sinh tồn nhẹ nhàng - Đánh giá: 91%")
+
+Tabs.TrangChu:AddButton({
+	Title = "Làm Quen Người Chơi 👋",
+	Description = "Tự động kết bạn với người chơi khác",
+	Callback = function()
+		makeFriends()
+	end
+})
+
+Tabs.TrangChu:AddButton({
+	Title = "Chơi Cờ Vua ♟️",
+	Description = "Tham gia trò chơi cờ vua",
+	Callback = function()
+		playChess()
+	end
+})
+
+Tabs.TrangChu:AddButton({
+	Title = "Tham Gia Sự Kiện 🎉",
+	Description = "Tham gia các sự kiện trong game",
+	Callback = function()
+		joinEvent()
+	end
+})
+
+Tabs.TrangChu:AddButton({
+	Title = "Mini Game Baschian 🎲",
+	Description = "Chơi mini game Baschian",
+	Callback = function()
+		playBaschian()
+	end
+})
+
+------------------------------------------------
+-- TAB AUTO FARM
+------------------------------------------------
+local AutoFarmSection = Tabs.AutoFarm:AddSection("Thu Thập Tài Nguyên")
+
+local AutoChopToggle = AutoFarmSection:AddToggle("AutoChop", {
+	Title = "Auto Chặt Cây 🌲",
+	Description = "Tự động chặt cây lấy gỗ",
+	Default = false
+})
+
+local AutoCollectToggle = AutoFarmSection:AddToggle("AutoCollect", {
+	Title = "Auto Nhặt Quả 🍓",
+	Description = "Tự động nhặt quả mọng và nấm",
+	Default = false
+})
+
+local AutoFishToggle = AutoFarmSection:AddToggle("AutoFish", {
+	Title = "Auto Câu Cá 🎣",
+	Description = "Tự động câu cá ở sông/hồ",
+	Default = false
+})
+
+local AutoGardenToggle = AutoFarmSection:AddToggle("AutoGarden", {
+	Title = "Auto Làm Vườn 🌻",
+	Description = "Tự động trồng trọt và thu hoạch",
+	Default = false
+})
+
+-- Biến toàn cục
+_G.AutoChop = false
+_G.AutoCollect = false
+_G.AutoFish = false
+_G.AutoGarden = false
+
+AutoChopToggle:OnChanged(function(Value)
+	_G.AutoChop = Value
+	if Value then
+		coroutine.wrap(function()
+			while _G.AutoChop do
+				task.wait(2)
+				chopTrees()
+			end
+		end)()
+	end
+end)
+
+AutoCollectToggle:OnChanged(function(Value)
+	_G.AutoCollect = Value
+	if Value then
+		coroutine.wrap(function()
+			while _G.AutoCollect do
+				task.wait(3)
+				collectResources()
+			end
+		end)()
+	end
+end)
+
+AutoFishToggle:OnChanged(function(Value)
+	_G.AutoFish = Value
+	if Value then
+		coroutine.wrap(function()
+			while _G.AutoFish do
+				task.wait(5)
+				goFishing()
+			end
+		end)()
+	end
+end)
+
+AutoGardenToggle:OnChanged(function(Value)
+	_G.AutoGarden = Value
+	if Value then
+		coroutine.wrap(function()
+			while _G.AutoGarden do
+				task.wait(4)
+				tendGarden()
+			end
+		end)()
+	end
+end)
+
+-- Nút điều khiển
+AutoFarmSection:AddButton({
+	Title = "Bật Tất Cả 🟢",
+	Description = "Bật tất cả tính năng auto farm",
+	Callback = function()
+		_G.AutoChop = true
+		_G.AutoCollect = true
+		_G.AutoFish = true
+		_G.AutoGarden = true
+		AutoChopToggle:SetValue(true)
+		AutoCollectToggle:SetValue(true)
+		AutoFishToggle:SetValue(true)
+		AutoGardenToggle:SetValue(true)
+	end
+})
+
+AutoFarmSection:AddButton({
+	Title = "Tắt Tất Cả 🔴",
+	Description = "Tắt tất cả tính năng auto farm",
+	Callback = function()
+		_G.AutoChop = false
+		_G.AutoCollect = false
+		_G.AutoFish = false
+		_G.AutoGarden = false
+		AutoChopToggle:SetValue(false)
+		AutoCollectToggle:SetValue(false)
+		AutoFishToggle:SetValue(false)
+		AutoGardenToggle:SetValue(false)
+	end
+})
+
+------------------------------------------------
+-- TAB CHẾ TẠO
+------------------------------------------------
+local CheTaoSection = Tabs.CheTao:AddSection("Chế Tạo Đồ Vật")
+
+CheTaoSection:AddButton({
+	Title = "Auto Chế Công Cụ 🛠️",
+	Description = "Tự động chế tạo công cụ cơ bản",
+	Callback = function()
+		craftBasicTools()
+	end
+})
+
+CheTaoSection:AddButton({
+	Title = "Auto Chế Vật Phẩm 🔧",
+	Description = "Tự động chế tạo đồ nâng cao",
+	Callback = function()
+		craftAdvancedItems()
+	end
+})
+
+CheTaoSection:AddButton({
+	Title = "Auto Nấu Ăn 🍳",
+	Description = "Tự động nấu thức ăn",
+	Callback = function()
+		cookFood()
+	end
+})
+
+CheTaoSection:AddButton({
+	Title = "Auto Xây Dựng 🏡",
+	Description = "Tự động xây nhà và công trình",
+	Callback = function()
+		buildStructures()
+	end
+})
+
+------------------------------------------------
+-- TAB NHÂN VẬT
+------------------------------------------------
+local NhanVatSection = Tabs.NhanVat:AddSection("Tùy Chỉnh Nhân Vật")
+
+local WalkSpeedSlider = NhanVatSection:AddSlider("WalkSpeed", {
+	Title = "Tốc Độ Di Chuyển 🏃",
+	Description = "Chỉnh tốc độ chạy/bước",
+	Default = 16,
+	Min = 16,
+	Max = 50,
+	Rounding = 1,
+	Callback = function(Value)
+		local humanoid = game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
+		if humanoid then
+			humanoid.WalkSpeed = Value
+		end
+	end
+})
+
+local JumpPowerSlider = NhanVatSection:AddSlider("JumpPower", {
+	Title = "Sức Mạnh Nhảy 🦘",
+	Description = "Chỉnh độ cao khi nhảy",
+	Default = 50,
+	Min = 50,
+	Max = 100,
+	Rounding = 1,
+	Callback = function(Value)
+		local humanoid = game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
+		if humanoid then
+			humanoid.JumpPower = Value
+		end
+	end
+})
+
+NhanVatSection:AddToggle("NoClip", {
+	Title = "Đi Xuyên Vật 🔮",
+	Description = "Đi xuyên qua vật thể",
+	Default = false,
+	Callback = function(Value)
+		_G.NoClip = Value
+		if Value then
+			enableNoClip()
+		else
+			disableNoClip()
+		end
+	end
+})
+
+NhanVatSection:AddToggle("InfJump", {
+	Title = "Nhảy Vô Hạn 🌈",
+	Description = "Nhảy liên tục không giới hạn",
+	Default = false,
+	Callback = function(Value)
+		_G.InfiniteJump = Value
+		if Value then
+			game:GetService("UserInputService").JumpRequest:connect(function()
+				if _G.InfiniteJump then
+					game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+				end
+			end)
+		end
+	end
+})
+
+------------------------------------------------
+-- TAB XÃ HỘI
+------------------------------------------------
+local XaHoiSection = Tabs.XaHoi:AddSection("Tương Tác Xã Hội")
+
+XaHoiSection:AddButton({
+	Title = "Thêm Bạn Tự Động 👥",
+	Description = "Tự động gửi lời mời kết bạn",
+	Callback = function()
+		autoAddFriends()
+	end
+})
+
+XaHoiSection:AddButton({
+	Title = "Chat Tự Động 💬",
+	Description = "Tự động trò chuyện với người chơi",
+	Callback = function()
+		autoChat()
+	end
+})
+
+XaHoiSection:AddButton({
+	Title = "Theo Dõi Người Chơi 🎯",
+	Description = "Tự động theo dõi người chơi khác",
+	Callback = function()
+		followPlayer()
+	end
+})
+
+XaHoiSection:AddButton({
+	Title = "Tặng Quà 🎁",
+	Description = "Tự động tặng quà cho bạn bè",
+	Callback = function()
+		giveGifts()
+	end
+})
+
+------------------------------------------------
+-- TAB TIỆN ÍCH
+------------------------------------------------
+local TienIchSection = Tabs.TienIch:AddSection("Tiện Ích Khác")
+
+TienIchSection:AddButton({
+	Title = "Anti AFK 🚫",
+	Description = "Chống AFK trong game",
+	Callback = function()
+		local VirtualUser = game:GetService("VirtualUser")
+		game:GetService("Players").LocalPlayer.Idled:connect(function()
+			VirtualUser:CaptureController()
+			VirtualUser:ClickButton2(Vector2.new())
+		end)
+	end
+})
+
+TienIchSection:AddButton({
+	Title = "Xóa GUI 🗑️",
+	Description = "Xóa giao diện script",
+	Callback = function()
+		ScreenGui:Destroy()
+	end
+})
+
+TienIchSection:AddButton({
+	Title = "Refresh Game 🔄",
+	Description = "Làm mới game",
+	Callback = function()
+		game:GetService("TeleportService"):Teleport(game.PlaceId)
+	end
+})
+
+TienIchSection:AddButton({
+	Title = "Báo Cáo Lỗi 📧",
+	Description = "Gửi báo cáo lỗi cho developer",
+	Callback = function()
+		reportBug()
+	end
+})
+
+-- Hàm hỗ trợ
+function makeFriends()
+	print("Đang tìm người chơi để kết bạn...")
+end
+
+function playChess()
+	print("Đang tham gia chơi cờ vua...")
+end
+
+function playBaschian()
+	print("Đang chơi mini game Baschian...")
+end
+
+function joinEvent()
+	print("Đang tham gia sự kiện...")
+end
+
+function chopTrees()
+	print("Đang chặt cây...")
+end
+
+function collectResources()
+	print("Đang nhặt tài nguyên...")
+end
+
+function goFishing()
+	print("Đang câu cá...")
+end
+
+function tendGarden()
+	print("Đang làm vườn...")
+end
+
+function craftBasicTools()
+	print("Đang chế tạo công cụ...")
+end
+
+function craftAdvancedItems()
+	print("Đang chế tạo vật phẩm nâng cao...")
+end
+
+function cookFood()
+	print("Đang nấu ăn...")
+end
+
+function buildStructures()
+	print("Đang xây dựng...")
+end
+
+function autoAddFriends()
+	print("Đang tự động thêm bạn...")
+end
+
+function autoChat()
+	print("Đang tự động chat...")
+end
+
+function followPlayer()
+	print("Đang theo dõi người chơi...")
+end
+
+function giveGifts()
+	print("Đang tặng quà...")
+end
+
+function enableNoClip()
+	print("Bật chế độ NoClip")
+end
+
+function disableNoClip()
+	print("Tắt chế độ NoClip")
+end
+
+function reportBug()
+	print("Đang gửi báo cáo lỗi...")
+end
+
+-- Thông báo khi load xong
+Fluent:Notify({
+	Title = "OMG HUB",
+	Content = "Đã tải thành công cho 99 Đêm Trong Rừng!",
+	SubContent = "Chúc bạn chơi game vui vẻ",
+	Duration = 5
+})
+
+print("OMG HUB - 99 ĐÊM TRONG RỪNG ĐÃ SẴN SÀNG!")
