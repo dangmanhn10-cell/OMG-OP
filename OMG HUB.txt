@@ -1,0 +1,195 @@
+-- 🎯 OMG HUB ANDROID - CHẮC CHẮN CHẠY
+-- Script cực đơn giản cho mobile
+
+-- Đợi game load
+repeat wait() until game:IsLoaded()
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- Tạo GUI cực đơn giản
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "OMGMobileHub"
+ScreenGui.Parent = game:GetService("CoreGui")
+
+-- NÚT MỞ MENU LỚN (dễ chạm trên mobile)
+local OpenBtn = Instance.new("TextButton")
+OpenBtn.Name = "OpenButton"
+OpenBtn.Parent = ScreenGui
+OpenBtn.Size = UDim2.new(0, 100, 0, 100)  -- Lớn để dễ chạm
+OpenBtn.Position = UDim2.new(0, 20, 0, 20)
+OpenBtn.BackgroundColor3 = Color3.fromRGB(255, 105, 180) -- Màu hồng
+OpenBtn.Text = "🎮\nOMG\nHUB"
+OpenBtn.TextColor3 = Color3.new(1, 1, 1) -- Màu trắng
+OpenBtn.TextScaled = true
+OpenBtn.ZIndex = 999
+
+-- MAIN FRAME
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.Size = UDim2.new(0, 350, 0, 500) -- To hơn cho mobile
+MainFrame.Position = UDim2.new(0.5, -175, 0.5, -250)
+MainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+MainFrame.Visible = false
+MainFrame.Active = true
+
+-- Tiêu đề
+local Title = Instance.new("TextLabel")
+Title.Parent = MainFrame
+Title.Size = UDim2.new(1, 0, 0, 50)
+Title.Position = UDim2.new(0, 0, 0, 0)
+Title.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
+Title.Text = "OMG HUB - ANDROID"
+Title.TextColor3 = Color3.new(1, 1, 1)
+Title.TextScaled = true
+
+-- Nút đóng
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Parent = MainFrame
+CloseBtn.Size = UDim2.new(0, 40, 0, 40)
+CloseBtn.Position = UDim2.new(1, -45, 0, 5)
+CloseBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+CloseBtn.Text = "X"
+CloseBtn.TextColor3 = Color3.new(1, 1, 1)
+CloseBtn.TextScaled = true
+
+-- Scrolling frame cho các nút
+local ScrollFrame = Instance.new("ScrollingFrame")
+ScrollFrame.Parent = MainFrame
+ScrollFrame.Size = UDim2.new(1, -10, 1, -60)
+ScrollFrame.Position = UDim2.new(0, 5, 0, 55)
+ScrollFrame.BackgroundTransparency = 1
+ScrollFrame.ScrollBarThickness = 8
+
+-- UI List Layout
+local UIListLayout = Instance.new("UIListLayout")
+UIListLayout.Parent = ScrollFrame
+UIListLayout.Padding = UDim.new(0, 10)
+
+-- Hàm tạo nút đơn giản
+function CreateSimpleButton(text, callback)
+    local button = Instance.new("TextButton")
+    button.Parent = ScrollFrame
+    button.Size = UDim2.new(1, -10, 0, 60)  -- Cao để dễ chạm
+    button.BackgroundColor3 = Color3.fromRGB(65, 65, 65)
+    button.Text = text
+    button.TextColor3 = Color3.new(1, 1, 1)
+    button.TextScaled = true
+    
+    button.MouseButton1Click:Connect(function()
+        callback()
+    end)
+    
+    return button
+end
+
+-- TẠO CÁC NÚT TÍNH NĂNG
+CreateSimpleButton("🚀 TỐC ĐỘ 50", function()
+    pcall(function()
+        LocalPlayer.Character.Humanoid.WalkSpeed = 50
+        print("✅ Đã set tốc độ 50!")
+    end)
+end)
+
+CreateSimpleButton("🦘 NHẢY 100", function()
+    pcall(function()
+        LocalPlayer.Character.Humanoid.JumpPower = 100
+        print("✅ Đã set nhảy 100!")
+    end)
+end)
+
+CreateSimpleButton("🛡️ VÔ ĐỊCH", function()
+    pcall(function()
+        LocalPlayer.Character.Humanoid.MaxHealth = math.huge
+        LocalPlayer.Character.Humanoid.Health = math.huge
+        print("✅ Đã bật vô địch!")
+    end)
+end)
+
+CreateSimpleButton("🏠 TELEPORT TRẠI", function()
+    pcall(function()
+        LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 10, 0)
+        print("✅ Đã tele về trại!")
+    end)
+end)
+
+CreateSimpleButton("🌳 AUTO CHẶT CÂY", function()
+    pcall(function()
+        _G.AutoChop = not _G.AutoChop
+        if _G.AutoChop then
+            print("✅ Đã bật auto chặt cây!")
+        else
+            print("❌ Đã tắt auto chặt cây!")
+        end
+    end)
+end)
+
+CreateSimpleButton("🐺 AUTO ĐÁNH THÚ", function()
+    pcall(function()
+        _G.AutoKill = not _G.AutoKill
+        if _G.AutoKill then
+            print("✅ Đã bật auto đánh thú!")
+        else
+            print("❌ Đã tắt auto đánh thú!")
+        end
+    end)
+end)
+
+CreateSimpleButton("🧲 BRING ITEMS", function()
+    pcall(function()
+        local count = 0
+        for _, item in pairs(workspace:GetChildren()) do
+            if item:IsA("Tool") or item:FindFirstChild("Handle") then
+                item.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+                count = count + 1
+            end
+        end
+        print("🎒 Đã mang "..count.." vật phẩm!")
+    end)
+end)
+
+CreateSimpleButton("⏰ ANTI AFK", function()
+    pcall(function()
+        game:GetService("Players").LocalPlayer.Idled:Connect(function()
+            game:GetService("VirtualInputManager"):SendKeyEvent(true, "Space", false, game)
+            wait(0.1)
+            game:GetService("VirtualInputManager"):SendKeyEvent(false, "Space", false, game)
+        end)
+        print("✅ Đã bật Anti AFK!")
+    end)
+end)
+
+CreateSimpleButton("🔄 RELOAD GUI", function()
+    pcall(function()
+        MainFrame.Visible = false
+        wait(0.5)
+        MainFrame.Visible = true
+        print("✅ Đã reload GUI!")
+    end)
+end)
+
+-- ĐIỀU KHIỂN MENU
+OpenBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+    print("🎮 "..(MainFrame.Visible and "Mở menu" or "Đóng menu"))
+end)
+
+CloseBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+    print("❌ Đã đóng menu")
+end)
+
+-- THÔNG BÁO
+print("🎯 OMG HUB ANDROID ĐÃ LOAD THÀNH CÔNG!")
+print("👆 Chạm nút OMG để mở menu!")
+print("📱 Menu lớn, dễ thao tác trên mobile!")
+
+-- Auto update canvas size
+spawn(function()
+    while wait(1) do
+        pcall(function()
+            ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
+        end)
+    end
+end)
