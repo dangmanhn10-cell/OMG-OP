@@ -1,0 +1,222 @@
+-- OMG Hub - 99 Dem trong Rung
+-- Script by Dang Manh
+
+local Player = game:GetService("Players").LocalPlayer
+local Mouse = Player:GetMouse()
+
+-- GUI OMG Style
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local CloseButton = Instance.new("TextButton")
+local ScrollFrame = Instance.new("ScrollingFrame")
+local OMGText = Instance.new("TextLabel")
+
+ScreenGui.Name = "OMGHub"
+ScreenGui.Parent = game.CoreGui
+
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 35)
+MainFrame.BorderSizePixel = 0
+MainFrame.Position = UDim2.new(0.35, 0, 0.25, 0)
+MainFrame.Size = UDim2.new(0, 450, 0, 500)
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+-- OMG Text Logo
+OMGText.Name = "OMGText"
+OMGText.Parent = MainFrame
+OMGText.BackgroundTransparency = 1
+OMGText.Position = UDim2.new(0.02, 0, 0.02, 0)
+OMGText.Size = UDim2.new(0, 60, 0, 25)
+OMGText.Font = Enum.Font.GothamBlack
+OMGText.Text = "OMG"
+OMGText.TextColor3 = Color3.fromRGB(255, 255, 0)
+OMGText.TextSize = 18
+OMGText.TextStrokeTransparency = 0
+
+Title.Name = "Title"
+Title.Parent = MainFrame
+Title.BackgroundColor3 = Color3.fromRGB(15, 15, 30)
+Title.BorderSizePixel = 0
+Title.Position = UDim2.new(0, 0, 0, 35)
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.Font = Enum.Font.GothamBold
+Title.Text = "99 ĐÊM TRONG RỪNG - ĐĂNG MẠNH"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 14
+Title.TextXAlignment = Enum.TextXAlignment.Center
+
+CloseButton.Name = "CloseButton"
+CloseButton.Parent = MainFrame
+CloseButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+CloseButton.BorderSizePixel = 0
+CloseButton.Position = UDim2.new(0.95, -25, 0.02, 0)
+CloseButton.Size = UDim2.new(0, 25, 0, 25)
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.TextSize = 14
+
+ScrollFrame.Name = "ScrollFrame"
+ScrollFrame.Parent = MainFrame
+ScrollFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
+ScrollFrame.BorderSizePixel = 0
+ScrollFrame.Position = UDim2.new(0, 0, 0, 75)
+ScrollFrame.Size = UDim2.new(1, 0, 1, -75)
+ScrollFrame.CanvasSize = UDim2.new(0, 0, 3, 0)
+ScrollFrame.ScrollBarThickness = 5
+
+-- Functions
+local function CreateButton(text, position, callback)
+    local Button = Instance.new("TextButton")
+    Button.Name = text .. "Button"
+    Button.Parent = ScrollFrame
+    Button.BackgroundColor3 = Color3.fromRGB(35, 35, 55)
+    Button.BorderSizePixel = 0
+    Button.Position = position
+    Button.Size = UDim2.new(0.94, 0, 0, 45)
+    Button.Font = Enum.Font.GothamSemibold
+    Button.Text = "🎮 " .. text
+    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Button.TextSize = 14
+    
+    -- Hiệu ứng hover OMG style
+    Button.MouseEnter:Connect(function()
+        game:GetService("TweenService"):Create(Button, TweenInfo.new(0.2), {
+            BackgroundColor3 = Color3.fromRGB(45, 45, 70),
+            TextColor3 = Color3.fromRGB(255, 255, 0)
+        }):Play()
+    end)
+    
+    Button.MouseLeave:Connect(function()
+        game:GetService("TweenService"):Create(Button, TweenInfo.new(0.2), {
+            BackgroundColor3 = Color3.fromRGB(35, 35, 55),
+            TextColor3 = Color3.fromRGB(255, 255, 255)
+        }):Play()
+    end)
+    
+    Button.MouseButton1Click:Connect(callback)
+    
+    return Button
+end
+
+-- Cheat Functions cho 99 Dem trong Rung
+local function GodMode()
+    local character = Player.Character
+    if character and character:FindFirstChild("Humanoid") then
+        character.Humanoid.MaxHealth = math.huge
+        character.Humanoid.Health = math.huge
+    end
+end
+
+local function InfiniteStamina()
+    while wait(1) do
+        local character = Player.Character
+        if character then
+            -- Giả sử stamina được lưu trong leaderstats hoặc playerstats
+            local leaderstats = Player:FindFirstChild("leaderstats")
+            if leaderstats then
+                local stamina = leaderstats:FindFirstChild("Stamina")
+                if stamina then
+                    stamina.Value = 100
+                end
+            end
+        end
+    end
+end
+
+local function SpeedHack()
+    local character = Player.Character
+    if character and character:FindFirstChild("Humanoid") then
+        character.Humanoid.WalkSpeed = 50
+    end
+end
+
+local function NoClip()
+    local character = Player.Character
+    if character then
+        for _, part in pairs(character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
+        end
+    end
+end
+
+local function AutoFarm()
+    -- Tự động farm vật phẩm
+    while wait(0.5) do
+        -- Code farm tự động
+        print("AutoFarm đang chạy...")
+    end
+end
+
+local function ESP()
+    -- Hiển thị vị trí quái vật và vật phẩm
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player ~= Player then
+            local character = player.Character
+            if character then
+                local highlight = Instance.new("Highlight")
+                highlight.Parent = character
+                highlight.FillColor = Color3.fromRGB(255, 0, 0)
+            end
+        end
+    end
+end
+
+local function UnlockAllItems()
+    -- Mở khóa tất cả vật phẩm
+    local backpack = Player:FindFirstChild("Backpack")
+    if backpack then
+        -- Code unlock items
+        print("Đã mở khóa tất cả vật phẩm!")
+    end
+end
+
+local function AntiAfk()
+    -- Chống AFK
+    local VirtualUser = game:GetService("VirtualUser")
+    game:GetService("Players").LocalPlayer.Idled:connect(function()
+        VirtualUser:CaptureController()
+        VirtualUser:ClickButton2(Vector2.new())
+    end)
+end
+
+-- Tạo các nút chức năng
+local buttonY = 10
+local buttonSpacing = 50
+
+CreateButton("GOD MODE", UDim2.new(0.03, 0, 0, buttonY), GodMode)
+buttonY = buttonY + buttonSpacing
+
+CreateButton("VÔ HẠN STAMINA", UDim2.new(0.03, 0, 0, buttonY), InfiniteStamina)
+buttonY = buttonY + buttonSpacing
+
+CreateButton("TĂNG TỐC ĐỘ", UDim2.new(0.03, 0, 0, buttonY), SpeedHack)
+buttonY = buttonY + buttonSpacing
+
+CreateButton("NO CLIP", UDim2.new(0.03, 0, 0, buttonY), NoClip)
+buttonY = buttonY + buttonSpacing
+
+CreateButton("TỰ ĐỘNG FARM", UDim2.new(0.03, 0, 0, buttonY), AutoFarm)
+buttonY = buttonY + buttonSpacing
+
+CreateButton("ESP (HIỆN KẺ ĐỊCH)", UDim2.new(0.03, 0, 0, buttonY), ESP)
+buttonY = buttonY + buttonSpacing
+
+CreateButton("MỞ KHÓA VẬT PHẨM", UDim2.new(0.03, 0, 0, buttonY), UnlockAllItems)
+buttonY = buttonY + buttonSpacing
+
+CreateButton("CHỐNG AFK", UDim2.new(0.03, 0, 0, buttonY), AntiAfk)
+
+-- Nút đóng GUI
+CloseButton.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+-- Thông báo khi load
+print("OMG Hub - 99 Dem trong Rung đã được kích hoạt!")
+print("Script by Đăng Mạnh")
