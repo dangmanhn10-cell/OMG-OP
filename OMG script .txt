@@ -1,0 +1,532 @@
+-- 🎯 OMG HUB - 99 NIGHTS IN THE FOREST SPECIFIC
+-- Code CỤ THỂ cho game 99 Nights in the Forest
+
+repeat task.wait() until game:IsLoaded()
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+
+-- 🛡️ ANTI LAG
+settings().Rendering.QualityLevel = 1
+game:GetService("Lighting").GlobalShadows = false
+
+-- 🟢 NÚT MỞ MENU
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = game.CoreGui
+local OpenButton = Instance.new("ImageButton")
+OpenButton.Parent = ScreenGui
+OpenButton.Size = UDim2.new(0, 50, 0, 50)
+OpenButton.Position = UDim2.new(0, 10, 0, 10)
+OpenButton.Image = "http://www.roblox.com/asset/?id=108786637679134"
+OpenButton.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
+
+OpenButton.MouseButton1Click:Connect(function()
+    game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.RightControl, false, game)
+end)
+
+-- 🟣 FLUENT UI - FIX THEME
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+
+-- ĐỢI FLUENT LOAD
+repeat task.wait() until Fluent
+
+local Window = Fluent:CreateWindow({
+    Title = "OMG HUB - 99 NIGHTS IN THE FOREST",
+    SubTitle = "Complete Script | cre Đăng Mạnh",
+    Size = UDim2.fromOffset(600, 500),
+    Acrylic = false,
+    Theme = "Darker",
+    MinimizeKey = Enum.KeyCode.RightControl
+})
+
+-- SET THEME MÀU HỒNG
+Fluent:ApplyTheme({
+    Accent = Color3.fromRGB(255, 105, 180),
+    Dark = {
+        Background = Color3.fromRGB(30, 10, 20),
+        Foreground = Color3.fromRGB(40, 20, 30),
+        Surface = Color3.fromRGB(50, 25, 40),
+        Primary = Color3.fromRGB(255, 105, 180),
+        Secondary = Color3.fromRGB(255, 150, 200),
+        Error = Color3.fromRGB(255, 100, 150)
+    }
+})
+
+local Tabs = {
+    Main = Window:AddTab({ Title = "⚡ Auto Farm" }),
+    Items = Window:AddTab({ Title = "📦 Items" }),
+    Teleport = Window:AddTab({ Title = "🚀 Teleport" }),
+    Player = Window:AddTab({ Title = "👥 Player" }),
+    Misc = Window:AddTab({ Title = "🎯 Misc" })
+}
+
+------------------------------------------------
+-- ⚡ AUTO FARM SPECIFIC FOR 99 NIGHTS IN THE FOREST
+------------------------------------------------
+
+-- 🪓 AUTO CHẶT CÂY THEO SỐ LƯỢNG
+Tabs.Main:AddToggle("AutoChopTreesAura", {
+    Title = "🪓 Auto Chặt Cây Aura",
+    Description = "Tự động chặt tất cả cây trong phạm vi",
+    Default = false,
+    Callback = function(Value)
+        _G.AutoChopAura = Value
+        while _G.AutoChopAura do
+            task.wait(0.5)
+            pcall(function()
+                local character = LocalPlayer.Character
+                if not character then return end
+                
+                local root = character.HumanoidRootPart
+                local treesChopped = 0
+                local maxTrees = _G.MaxTreesToChop or 10
+
+                for _, obj in pairs(workspace:GetDescendants()) do
+                    if _G.AutoChopAura and treesChopped < maxTrees then
+                        local objName = obj.Name:lower()
+                        if (objName:find("tree") or objName:find("wood") or objName:find("log") or 
+                            objName:find("oak") or objName:find("pine") or objName:find("birch")) then
+                            
+                            if obj:IsA("Part") or obj:IsA("Model") then
+                                local treePos = obj:IsA("Part") and obj.Position or (obj.PrimaryPart and obj.PrimaryPart.Position)
+                                if treePos then
+                                    local dist = (root.Position - treePos).Magnitude
+                                    
+                                    if dist < (_G.ChopAuraRange or 30) then
+                                        -- Teleport đến cây
+                                        root.CFrame = CFrame.new(treePos + Vector3.new(0, 3, 3))
+                                        task.wait(0.3)
+                                        
+                                        -- Chặt cây
+                                        for i = 1, 3 do
+                                            game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, true, game, 0)
+                                            task.wait(0.1)
+                                            game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, false, game, 0)
+                                            task.wait(0.1)
+                                        end
+                                        
+                                        treesChopped = treesChopped + 1
+                                        if treesChopped >= maxTrees then
+                                            break
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end
+})
+
+-- 📏 PHẠM VI CHẶT CÂY AURA
+Tabs.Main:AddSlider("ChopAuraRange", {
+    Title = "📏 Phạm vi chặt cây",
+    Description = "Khoảng cách tìm và chặt cây",
+    Default = 30,
+    Min = 10,
+    Max = 100,
+    Rounding = 1,
+    Callback = function(Value)
+        _G.ChopAuraRange = Value
+    end
+})
+
+-- 🔢 SỐ LƯỢNG CÂY TỐI ĐA
+Tabs.Main:AddSlider("MaxTreesToChop", {
+    Title = "🔢 Số lượng cây tối đa",
+    Description = "Số cây sẽ chặt trước khi dừng",
+    Default = 10,
+    Min = 5,
+    Max = 50,
+    Rounding = 1,
+    Callback = function(Value)
+        _G.MaxTreesToChop = Value
+    end
+})
+
+-- 🌱 TRỒNG CÂY XUNG QUANH TRẠI
+Tabs.Main:AddToggle("AutoPlantTrees", {
+    Title = "🌱 Auto Trồng Cây Quanh Trại",
+    Description = "Tự động trồng cây xung quanh khu vực trại",
+    Default = false,
+    Callback = function(Value)
+        _G.AutoPlant = Value
+        local basePosition = Vector3.new(0, 10, 0) -- Vị trí trại mặc định
+        
+        while _G.AutoPlant do
+            task.wait(2)
+            pcall(function()
+                -- Tìm vị trí trại thực tế
+                for _, obj in pairs(workspace:GetChildren()) do
+                    if obj.Name:lower():find("camp") or obj.Name:lower():find("base") or obj.Name:lower():find("spawn") then
+                        if obj:IsA("Part") then
+                            basePosition = obj.Position
+                            break
+                        end
+                    end
+                end
+                
+                -- Trồng cây theo vòng tròn quanh trại
+                local radius = 15
+                local treesToPlant = 8 -- Số cây muốn trồng
+                
+                for i = 1, treesToPlant do
+                    if not _G.AutoPlant then break end
+                    
+                    local angle = (i / treesToPlant) * math.pi * 2
+                    local plantPos = basePosition + Vector3.new(
+                        math.cos(angle) * radius,
+                        0,
+                        math.sin(angle) * radius
+                    )
+                    
+                    -- Teleport đến vị trí trồng
+                    LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(plantPos)
+                    task.wait(0.5)
+                    
+                    -- Trồng cây (giả sử dùng tool hoặc click)
+                    game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E, false, game)
+                    task.wait(0.2)
+                    game:GetService("VirtualInputManager"):SendKeyEvent(false, Enum.KeyCode.E, false, game)
+                    
+                    task.wait(1)
+                end
+            end)
+        end
+    end
+})
+
+-- 🐺 KILL AURA CHO THÚ VẬT
+Tabs.Main:AddToggle("KillAuraAnimals", {
+    Title = "🐺 Kill Aura Thú Vật",
+    Description = "Tự động đánh sói, gấu, thú trong phạm vi",
+    Default = false,
+    Callback = function(Value)
+        _G.KillAura = Value
+        while _G.KillAura do
+            task.wait(0.3)
+            pcall(function()
+                local character = LocalPlayer.Character
+                if not character then return end
+                
+                local root = character:FindFirstChild("HumanoidRootPart")
+                if not root then return end
+
+                -- Tìm thú vật trong game
+                for _, mob in pairs(workspace:GetChildren()) do
+                    if _G.KillAura and mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
+                        local mobName = mob.Name:lower()
+                        if mobName:find("wolf") or mobName:find("bear") or 
+                           mobName:find("deer") or mobName:find("animal") or
+                           mobName:find("enemy") or mob:FindFirstChild("Head") then
+                            
+                            local mobRoot = mob:FindFirstChild("HumanoidRootPart") or mob:FindFirstChild("Head")
+                            if mobRoot then
+                                local distance = (root.Position - mobRoot.Position).Magnitude
+                                
+                                if distance < (_G.KillAuraRange or 25) then
+                                    -- Nhìn về phía mob
+                                    root.CFrame = CFrame.lookAt(root.Position, mobRoot.Position)
+                                    
+                                    -- Tấn công liên tục
+                                    for i = 1, 3 do
+                                        game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, true, game, 0)
+                                        task.wait(0.08)
+                                        game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, false, game, 0)
+                                        task.wait(0.08)
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end
+})
+
+-- 📏 PHẠM VI KILL AURA
+Tabs.Main:AddSlider("KillAuraRange", {
+    Title = "📏 Phạm vi Kill Aura",
+    Description = "Khoảng cách tự động đánh thú",
+    Default = 25,
+    Min = 10,
+    Max = 50,
+    Rounding = 1,
+    Callback = function(Value)
+        _G.KillAuraRange = Value
+    end
+})
+
+------------------------------------------------
+-- 🚀 TELEPORT CHÍNH XÁC
+------------------------------------------------
+
+-- 🏠 TELEPORT VỀ TRẠI CHÍNH XÁC
+Tabs.Teleport:AddButton({
+    Title = "🏠 Tele Về Trại Chính Xác",
+    Description = "Dịch chuyển về đúng vị trí trại",
+    Callback = function()
+        pcall(function()
+            local foundCamp = false
+            local campPosition = Vector3.new(0, 10, 0) -- Mặc định
+            
+            -- Tìm trại thực tế trong game
+            for _, obj in pairs(workspace:GetChildren()) do
+                local objName = obj.Name:lower()
+                if objName:find("camp") or objName:find("base") or objName:find("spawn") or 
+                   objName:find("home") or objName:find("tent") or objName:find("fire") then
+                    
+                    if obj:IsA("Part") then
+                        campPosition = obj.Position
+                        foundCamp = true
+                        break
+                    elseif obj:IsA("Model") and obj.PrimaryPart then
+                        campPosition = obj.PrimaryPart.Position
+                        foundCamp = true
+                        break
+                    end
+                end
+            end
+            
+            -- Tìm workbench, crafting table
+            if not foundCamp then
+                for _, obj in pairs(workspace:GetDescendants()) do
+                    local objName = obj.Name:lower()
+                    if objName:find("workbench") or objName:find("craft") or objName:find("table") then
+                        if obj:IsA("Part") then
+                            campPosition = obj.Position
+                            foundCamp = true
+                            break
+                        end
+                    end
+                end
+            end
+            
+            LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(campPosition + Vector3.new(0, 3, 0))
+            
+            if foundCamp then
+                Fluent:Notify({
+                    Title = "🏠 Đã tele về trại",
+                    Content = "Vị trí chính xác!",
+                    Duration = 3
+                })
+            else
+                Fluent:Notify({
+                    Title = "🏠 Đã tele về vị trí mặc định",
+                    Content = "Không tìm thấy trại, dùng vị trí (0,10,0)",
+                    Duration = 3
+                })
+            end
+        end)
+    end
+})
+
+-- 📍 TELEPORT ĐẾN KHU VỰC QUAN TRỌNG
+local importantLocations = {
+    ["Khu Chế Tạo"] = Vector3.new(50, 10, 50),
+    ["Khu Rừng"] = Vector3.new(100, 10, 0),
+    ["Khu Núi"] = Vector3.new(0, 20, 100),
+    ["Khu Sông"] = Vector3.new(-50, 10, -50),
+    ["Khu Mỏ"] = Vector3.new(0, 10, -100)
+}
+
+Tabs.Teleport:AddDropdown("TeleportImportant", {
+    Title = "📍 Teleport Khu Vực",
+    Description = "Dịch chuyển đến khu vực quan trọng",
+    Values = {"Khu Chế Tạo", "Khu Rừng", "Khu Núi", "Khu Sông", "Khu Mỏ"},
+    Default = "Khu Chế Tạo",
+    Callback = function(Value)
+        if importantLocations[Value] then
+            LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(importantLocations[Value])
+            Fluent:Notify({
+                Title = "📍 Đã tele đến "..Value,
+                Duration = 3
+            })
+        end
+    end
+})
+
+-- 🔄 AUTO TELE VỀ TRẠI KHI NGUY HIỂM
+Tabs.Teleport:AddToggle("AutoTeleToBase", {
+    Title = "🔄 Auto Tele Về Trại",
+    Description = "Tự động về trại khi máu thấp hoặc nguy hiểm",
+    Default = false,
+    Callback = function(Value)
+        _G.AutoTeleBase = Value
+        while _G.AutoTeleBase do
+            task.wait(3)
+            pcall(function()
+                local humanoid = LocalPlayer.Character.Humanoid
+                local health = humanoid.Health
+                local maxHealth = humanoid.MaxHealth
+                
+                -- Tele khi máu dưới 30% hoặc bị tấn công
+                if health < (maxHealth * 0.3) then
+                    -- Gọi hàm tele về trại
+                    local campPosition = Vector3.new(0, 10, 0)
+                    for _, obj in pairs(workspace:GetChildren()) do
+                        if obj.Name:lower():find("camp") or obj.Name:lower():find("base") then
+                            if obj:IsA("Part") then
+                                campPosition = obj.Position
+                                break
+                            end
+                        end
+                    end
+                    
+                    LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(campPosition + Vector3.new(0, 3, 0))
+                    Fluent:Notify({
+                        Title = "🆘 Auto Tele Về Trại",
+                        Content = "Máu thấp! Đã về khu an toàn!",
+                        Duration = 5
+                    })
+                    task.wait(10) -- Chờ 10s trước khi check lại
+                end
+            end)
+        end
+    end
+})
+
+------------------------------------------------
+-- 📦 ITEMS MANAGEMENT
+------------------------------------------------
+
+-- 🧲 BRING ITEMS THÔNG MINH
+Tabs.Items:AddButton({
+    Title = "🧲 Bring Items Thông Minh",
+    Description = "Mang vật phẩm quan trọng về trại",
+    Callback = function()
+        pcall(function()
+            local campPosition = Vector3.new(0, 10, 0)
+            local itemCount = 0
+            
+            -- Tìm trại
+            for _, obj in pairs(workspace:GetChildren()) do
+                if obj.Name:lower():find("camp") or obj.Name:lower():find("base") then
+                    if obj:IsA("Part") then
+                        campPosition = obj.Position
+                        break
+                    end
+                end
+            end
+            
+            -- Mang items về trại
+            for _, item in pairs(workspace:GetChildren()) do
+                if item:IsA("Tool") or item:FindFirstChild("Handle") then
+                    local distToPlayer = (LocalPlayer.Character.HumanoidRootPart.Position - item.Position).Magnitude
+                    if distToPlayer < 50 then
+                        item.CFrame = CFrame.new(campPosition + Vector3.new(0, 5, 0))
+                        itemCount = itemCount + 1
+                        task.wait(0.1) -- Tránh lag
+                    end
+                end
+            end
+            
+            Fluent:Notify({
+                Title = "🎒 Đã mang "..itemCount.." vật phẩm về trại",
+                Duration = 3
+            })
+        end)
+    end
+})
+
+------------------------------------------------
+-- 👥 PLAYER SETTINGS
+------------------------------------------------
+
+-- 🏃 TỐC ĐỘ CHẠY
+Tabs.Player:AddSlider("WalkSpeed", {
+    Title = "🏃 Tốc độ chạy",
+    Description = "Chỉnh tốc độ di chuyển",
+    Default = 16,
+    Min = 16,
+    Max = 150,
+    Rounding = 1,
+    Callback = function(Value)
+        pcall(function()
+            LocalPlayer.Character.Humanoid.WalkSpeed = Value
+        end)
+    end
+})
+
+-- 🦘 SỨC NHẢY
+Tabs.Player:AddSlider("JumpPower", {
+    Title = "🦘 Sức nhảy",
+    Description = "Chỉnh độ cao nhảy",
+    Default = 50,
+    Min = 50,
+    Max = 200,
+    Rounding = 1,
+    Callback = function(Value)
+        pcall(function()
+            LocalPlayer.Character.Humanoid.JumpPower = Value
+        end)
+    end
+})
+
+-- 🛡️ VÔ ĐỊCH
+Tabs.Player:AddToggle("GodMode", {
+    Title = "🛡️ Vô Địch",
+    Description = "Bất tử - không nhận sát thương",
+    Default = false,
+    Callback = function(Value)
+        if Value then
+            LocalPlayer.Character.Humanoid.MaxHealth = math.huge
+            LocalPlayer.Character.Humanoid.Health = math.huge
+        else
+            LocalPlayer.Character.Humanoid.MaxHealth = 100
+            LocalPlayer.Character.Humanoid.Health = 100
+        end
+    end
+})
+
+------------------------------------------------
+-- 🎯 MISC SETTINGS
+------------------------------------------------
+
+-- ⏰ ANTI AFK
+Tabs.Misc:AddToggle("AntiAFK", {
+    Title = "⏰ Anti AFK",
+    Description = "Chống bị kick AFK",
+    Default = false,
+    Callback = function(Value)
+        _G.AntiAFK = Value
+        if Value then
+            game:GetService("Players").LocalPlayer.Idled:Connect(function()
+                game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.Space, false, game)
+                task.wait(0.1)
+                game:GetService("VirtualInputManager"):SendKeyEvent(false, Enum.KeyCode.Space, false, game)
+            end)
+        end
+    end
+})
+
+-- 🌟 FULL BRIGHT
+Tabs.Misc:AddToggle("FullBright", {
+    Title = "🌟 Full Bright",
+    Description = "Sáng cả ban đêm",
+    Default = false,
+    Callback = function(Value)
+        if Value then
+            game:GetService("Lighting").Brightness = 2
+            game:GetService("Lighting").ClockTime = 14
+            game:GetService("Lighting").FogEnd = 100000
+        else
+            game:GetService("Lighting").Brightness = 1
+            game:GetService("Lighting").FogEnd = 1000
+        end
+    end
+})
+
+-- 🎉 THÔNG BÁO
+Fluent:Notify({
+    Title = "🎯 OMG HUB",
+    Content = "ĐÃ LOAD THÀNH CÔNG!",
+    SubContent = "99 Nights in the Forest - Complete Features",
+    Duration = 5
+})
+
+print("🎯 OMG HUB - 99 NIGHTS IN THE FOREST COMPLETE LOADED!")
