@@ -1,0 +1,377 @@
+-- 🎯 OMG HUB VIP - 99 NIGHTS IN THE FOREST
+-- Script MỚI HOÀN TOÀN | cre: Đăng Mạnh
+
+repeat task.wait() until game:IsLoaded()
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
+
+-- 🛡️ ANTI LAG
+settings().Rendering.QualityLevel = 1
+game:GetService("Lighting").GlobalShadows = false
+
+-- 🟢 TẠO GUI ĐƠN GIẢN - CHẮC CHẮN HOẠT ĐỘNG
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "OMG_HUB"
+ScreenGui.Parent = game.CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+-- NÚT MỞ MENU
+local OpenButton = Instance.new("TextButton")
+OpenButton.Name = "OpenBtn"
+OpenButton.Parent = ScreenGui
+OpenButton.Size = UDim2.new(0, 60, 0, 60)
+OpenButton.Position = UDim2.new(0, 20, 0, 20)
+OpenButton.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
+OpenButton.Text = "🎮\nOMG"
+OpenButton.TextColor3 = Color3.white
+OpenButton.TextScaled = true
+OpenButton.ZIndex = 10
+
+-- MAIN FRAME
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.Size = UDim2.new(0, 350, 0, 400)
+MainFrame.Position = UDim2.new(0.5, -175, 0.5, -200)
+MainFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+MainFrame.Visible = false
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+-- TITLE
+local Title = Instance.new("TextLabel")
+Title.Parent = MainFrame
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.Position = UDim2.new(0, 0, 0, 0)
+Title.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
+Title.Text = "OMG HUB - 99 NIGHTS IN THE FOREST"
+Title.TextColor3 = Color3.white
+Title.TextScaled = true
+
+-- CLOSE BUTTON
+local CloseButton = Instance.new("TextButton")
+CloseButton.Parent = MainFrame
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Position = UDim2.new(1, -35, 0, 5)
+CloseButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.white
+
+-- SCROLLING FRAME
+local ScrollingFrame = Instance.new("ScrollingFrame")
+ScrollingFrame.Parent = MainFrame
+ScrollingFrame.Size = UDim2.new(1, -10, 1, -50)
+ScrollingFrame.Position = UDim2.new(0, 5, 0, 45)
+ScrollingFrame.BackgroundTransparency = 1
+ScrollingFrame.ScrollBarThickness = 5
+
+-- UI LIST LAYOUT
+local UIListLayout = Instance.new("UIListLayout")
+UIListLayout.Parent = ScrollingFrame
+UIListLayout.Padding = UDim.new(0, 5)
+
+-- 🎯 BIẾN TOÀN CỤC
+_G = {
+    AutoChop = false,
+    AutoKill = false,
+    WalkSpeed = 16,
+    JumpPower = 50
+}
+
+-- 🎯 HÀM TẠO NÚT
+function CreateButton(name, callback)
+    local button = Instance.new("TextButton")
+    button.Parent = ScrollingFrame
+    button.Size = UDim2.new(1, -10, 0, 40)
+    button.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+    button.Text = name
+    button.TextColor3 = Color3.white
+    button.TextScaled = true
+    
+    button.MouseButton1Click:Connect(callback)
+    return button
+end
+
+-- 🎯 HÀM TẠO TOGGLE
+function CreateToggle(name, callback)
+    local toggleFrame = Instance.new("Frame")
+    toggleFrame.Parent = ScrollingFrame
+    toggleFrame.Size = UDim2.new(1, -10, 0, 40)
+    toggleFrame.BackgroundTransparency = 1
+    
+    local label = Instance.new("TextLabel")
+    label.Parent = toggleFrame
+    label.Size = UDim2.new(0.7, 0, 1, 0)
+    label.Position = UDim2.new(0, 0, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Text = name
+    label.TextColor3 = Color3.white
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.TextScaled = true
+    
+    local toggleBtn = Instance.new("TextButton")
+    toggleBtn.Parent = toggleFrame
+    toggleBtn.Size = UDim2.new(0, 60, 0, 30)
+    toggleBtn.Position = UDim2.new(1, -65, 0.5, -15)
+    toggleBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+    toggleBtn.Text = "OFF"
+    toggleBtn.TextColor3 = Color3.white
+    
+    local isOn = false
+    
+    toggleBtn.MouseButton1Click:Connect(function()
+        isOn = not isOn
+        if isOn then
+            toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 255, 50)
+            toggleBtn.Text = "ON"
+        else
+            toggleBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+            toggleBtn.Text = "OFF"
+        end
+        callback(isOn)
+    end)
+    
+    return toggleBtn
+end
+
+-- 🎯 HÀM TẠO SLIDER
+function CreateSlider(name, min, max, default, callback)
+    local sliderFrame = Instance.new("Frame")
+    sliderFrame.Parent = ScrollingFrame
+    sliderFrame.Size = UDim2.new(1, -10, 0, 60)
+    sliderFrame.BackgroundTransparency = 1
+    
+    local label = Instance.new("TextLabel")
+    label.Parent = sliderFrame
+    label.Size = UDim2.new(1, 0, 0, 25)
+    label.Position = UDim2.new(0, 0, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Text = name .. ": " .. default
+    label.TextColor3 = Color3.white
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    
+    local slider = Instance.new("Frame")
+    slider.Parent = sliderFrame
+    slider.Size = UDim2.new(1, 0, 0, 20)
+    slider.Position = UDim2.new(0, 0, 0, 30)
+    slider.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    
+    local fill = Instance.new("Frame")
+    fill.Parent = slider
+    fill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
+    fill.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
+    
+    local value = default
+    
+    slider.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            local connection
+            connection = game:GetService("UserInputService").InputChanged:Connect(function(move)
+                if move.UserInputType == Enum.UserInputType.MouseMovement then
+                    local relativeX = math.clamp((move.Position.X - slider.AbsolutePosition.X) / slider.AbsoluteSize.X, 0, 1)
+                    value = math.floor(min + (max - min) * relativeX)
+                    fill.Size = UDim2.new(relativeX, 0, 1, 0)
+                    label.Text = name .. ": " .. value
+                    callback(value)
+                end
+            end)
+            
+            game:GetService("UserInputService").InputEnded:Connect(function(endInput)
+                if endInput.UserInputType == Enum.UserInputType.MouseButton1 then
+                    connection:Disconnect()
+                end
+            end)
+        end
+    end)
+    
+    return slider
+end
+
+-- 🎯 TẠO GIAO DIỆN CHÍNH
+-- TIÊU ĐỀ
+local title = Instance.new("TextLabel")
+title.Parent = ScrollingFrame
+title.Size = UDim2.new(1, -10, 0, 30)
+title.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
+title.Text = "⚡ AUTO FARM"
+title.TextColor3 = Color3.white
+title.TextScaled = true
+
+-- 🪓 AUTO CHẶT CÂY
+CreateToggle("🌳 Auto Chặt Cây", function(value)
+    _G.AutoChop = value
+    while _G.AutoChop do
+        task.wait(1)
+        pcall(function()
+            local character = LocalPlayer.Character
+            if not character then return end
+            
+            local root = character.HumanoidRootPart
+            
+            for _, obj in pairs(workspace:GetDescendants()) do
+                if _G.AutoChop and obj.Name:lower():find("tree") then
+                    if obj:IsA("Part") then
+                        local dist = (root.Position - obj.Position).Magnitude
+                        if dist < 25 then
+                            root.CFrame = CFrame.new(obj.Position + Vector3.new(0, 3, 3))
+                            task.wait(0.5)
+                            -- Click chặt cây
+                            game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, true, game, 0)
+                            task.wait(0.2)
+                            game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, false, game, 0)
+                        end
+                    end
+                end
+            end
+        end)
+    end
+end)
+
+-- 🐺 AUTO ĐÁNH THÚ
+CreateToggle("🐺 Auto Đánh Thú", function(value)
+    _G.AutoKill = value
+    while _G.AutoKill do
+        task.wait(0.5)
+        pcall(function()
+            local character = LocalPlayer.Character
+            if not character then return end
+            
+            local root = character.HumanoidRootPart
+            
+            for _, mob in pairs(workspace:GetChildren()) do
+                if _G.AutoKill and mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
+                    if mob.Name:lower():find("wolf") or mob.Name:lower():find("bear") then
+                        local mobRoot = mob:FindFirstChild("HumanoidRootPart") or mob:FindFirstChild("Head")
+                        if mobRoot then
+                            local dist = (root.Position - mobRoot.Position).Magnitude
+                            if dist < 20 then
+                                root.CFrame = CFrame.lookAt(root.Position, mobRoot.Position)
+                                -- Click tấn công
+                                for i = 1, 2 do
+                                    game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, true, game, 0)
+                                    task.wait(0.1)
+                                    game:GetService("VirtualInputManager"):SendMouseButtonEvent(0, 0, 0, false, game, 0)
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    end
+end)
+
+-- TIÊU ĐỀ PLAYER
+local playerTitle = Instance.new("TextLabel")
+playerTitle.Parent = ScrollingFrame
+playerTitle.Size = UDim2.new(1, -10, 0, 30)
+playerTitle.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
+playerTitle.Text = "👥 PLAYER SETTINGS"
+playerTitle.TextColor3 = Color3.white
+playerTitle.TextScaled = true
+
+-- 🏃 TỐC ĐỘ CHẠY
+CreateSlider("Tốc độ chạy", 16, 100, 16, function(value)
+    _G.WalkSpeed = value
+    pcall(function()
+        LocalPlayer.Character.Humanoid.WalkSpeed = value
+    end)
+end)
+
+-- 🦘 SỨC NHẢY
+CreateSlider("Sức nhảy", 50, 200, 50, function(value)
+    _G.JumpPower = value
+    pcall(function()
+        LocalPlayer.Character.Humanoid.JumpPower = value
+    end)
+end)
+
+-- 🛡️ VÔ ĐỊCH
+CreateToggle("🛡️ Vô Địch", function(value)
+    if value then
+        LocalPlayer.Character.Humanoid.MaxHealth = math.huge
+        LocalPlayer.Character.Humanoid.Health = math.huge
+    else
+        LocalPlayer.Character.Humanoid.MaxHealth = 100
+        LocalPlayer.Character.Humanoid.Health = 100
+    end
+end)
+
+-- TIÊU ĐỀ TELEPORT
+local teleportTitle = Instance.new("TextLabel")
+teleportTitle.Parent = ScrollingFrame
+teleportTitle.Size = UDim2.new(1, -10, 0, 30)
+teleportTitle.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
+teleportTitle.Text = "🚀 TELEPORT"
+teleportTitle.TextColor3 = Color3.white
+teleportTitle.TextScaled = true
+
+-- 🏠 TELEPORT VỀ TRẠI
+CreateButton("🏠 Teleport Về Trại", function()
+    pcall(function()
+        LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 10, 0)
+    end)
+end)
+
+-- 🧲 BRING ITEMS
+CreateButton("🧲 Bring Tất Cả Items", function()
+    local count = 0
+    for _, item in pairs(workspace:GetChildren()) do
+        pcall(function()
+            if item:IsA("Tool") or item:FindFirstChild("Handle") then
+                item.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+                count = count + 1
+            end
+        end)
+    end
+    warn("🎒 Đã mang "..count.." vật phẩm")
+end)
+
+-- ⏰ ANTI AFK
+CreateToggle("⏰ Anti AFK", function(value)
+    if value then
+        game:GetService("Players").LocalPlayer.Idled:Connect(function()
+            game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.Space, false, game)
+            task.wait(0.1)
+            game:GetService("VirtualInputManager"):SendKeyEvent(false, Enum.KeyCode.Space, false, game)
+        end)
+    end
+end)
+
+-- 🔧 FIX GUI
+CreateButton("🔧 Fix GUI (Nếu lỗi)", function()
+    MainFrame.Visible = false
+    task.wait(0.1)
+    MainFrame.Visible = true
+end)
+
+-- 🎯 ĐIỀU KHIỂN GUI
+OpenButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+end)
+
+CloseButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+end)
+
+-- 🎉 THÔNG BÁO
+warn("🎯 OMG HUB VIP ĐÃ LOAD THÀNH CÔNG!")
+warn("🎮 Nhấn nút OMG để mở menu!")
+warn("👆 Kéo menu để di chuyển!")
+
+print([[
+-------------------------------------
+🎯 OMG HUB VIP - 99 NIGHTS IN THE FOREST
+✅ TÍNH NĂNG:
+🌳 Auto Chặt Cây
+🐺 Auto Đánh Thú  
+🏃 Tốc Độ Chạy
+🦘 Sức Nhảy
+🛡️ Vô Địch
+🏠 Teleport
+🧲 Bring Items
+⏰ Anti AFK
+-------------------------------------
+]])
